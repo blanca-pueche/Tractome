@@ -9,11 +9,11 @@ def estimate_table_height(df):
     if df is None or df.empty:
         return 128  # very little in case it's empty
     
-    row_height = 38 # Default row height
-    base_padding = 200  # Base padding
+    row_height = 32 # Default row height
+    base_padding = 100  # Base padding
 
     height = len(df) * row_height + base_padding
-    height = max(height, 128) # At least 128px always
-    height = min (height, 1024) # At most 1024px
+    height = max(height, 400) # At least 128px always
+    height = min (height, 768) # At most 1024px
 
     return height
