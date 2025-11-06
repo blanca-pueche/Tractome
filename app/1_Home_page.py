@@ -165,19 +165,21 @@ if mesh_id:
     with st.spinner("Fetching disease information..."):
         disease, disease_url = get_disease_name(mesh_id)
         
-        if disease:
-            normalized_disease = normalize_disease_name(disease)
-            st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
-            
-            # Step 3: File upload only after disease name is given
-            url = generate_expression_atlas_link(disease_name=normalized_disease)
-            uploaded_file = st.file_uploader(
-                f"📁 Upload Differential Expression File (TSV from Expression Atlas: [link]({url}))",
-                type=["tsv"]
-            )
+    if not disease:
+        st.error("No valid MeSH term found. Please enter a correct MeSH ID or disease name.")
+        st.stop()
+        
+    if disease:
+        normalized_disease = normalize_disease_name(disease)
+        st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
+        
+        # Step 3: File upload only after disease name is given
+        url = generate_expression_atlas_link(disease_name=normalized_disease)
+        uploaded_file = st.file_uploader(
+            f"📁 Upload Differential Expression File (TSV from Expression Atlas: [link]({url}))",
+            type=["tsv"]
+        )
 
-            
-            
             
     if uploaded_file:
         df_raw = pd.read_csv(uploaded_file, sep="\t")
