@@ -17,17 +17,6 @@ import subprocess
 import webbrowser
 import sys
 
-# Where am I?
-current_page = os.path.basename(__file__)
-
-# Hide sidebar hack
-if "demo" in current_page:
-    st.markdown("""
-        <style>
-            section[data-testid="stSidebarNav"] {display: none;}
-        </style>
-    """, unsafe_allow_html=True)
-
 st.markdown("""
     <style>
     .fixed-logo {
