@@ -17,6 +17,21 @@ import subprocess
 import webbrowser
 import sys
 
+# Hide sidebar hack
+st.markdown("""
+    <style>
+        /* Oculta la barra lateral del menú multipágina */
+        section[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        /* Expande el contenido a todo el ancho */
+        .block-container {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
     <style>
     .fixed-logo {
@@ -89,25 +104,13 @@ if "demo_port" not in st.session_state:
     st.session_state.demo_port = None
 
 if st.button("Pre-computed example of MeSH ID: D003110"):
-    port = find_free_port()
-
-    #start demo server
-    subprocess.Popen([
-        sys.executable, "-m", "streamlit", "run", str(demo_path),
-        "--server.port", str(port),
-        "--server.headless", "true",
-    ])
-
-    #display when it runs
-    url = f"http://localhost:{port}"
-    st.info(f"Demo app is running at: {url}")
-
-    webbrowser.open_new_tab(url)
+    # Redirect to the demo
+    st.switch_page("pages/demo.py")
     
     
 # Style and layout (tooltip)
 st.markdown("""
-<style>
+<style>        
 .email-label-wrapper {
   display: flex;
   align-items: center;
