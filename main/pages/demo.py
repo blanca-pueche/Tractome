@@ -11,6 +11,12 @@ from pipeline import (estimate_table_height, normalize_disease_name, save_pathwa
 import time
 from pathlib import Path
 
+# Set page title and icon
+st.set_page_config(
+    page_title="Tractome CNB – Demo (Colonic Neoplasms)",
+    page_icon="⚗️"
+)
+
 st.markdown("""
     <style>
     .fixed-logo {
@@ -63,12 +69,6 @@ logo_placeholder.markdown(
 
 # Image set with st.image() 
 st.image("./CNB_2025.png", width=200)
-
-# Set page title and icon
-st.set_page_config(
-    page_title="Tractome CNB – Demo (Colonic Neoplasms)",
-    page_icon="⚗️"
-)
 
 st.title("Tractome")
 st.markdown(

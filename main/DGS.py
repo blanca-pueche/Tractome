@@ -17,6 +17,11 @@ import subprocess
 import webbrowser
 import sys
 
+st.set_page_config(
+    page_title="Tractome CNB – Main Analysis",
+    page_icon="🧬"
+)
+
 st.markdown("""
     <style>
     .fixed-logo {
@@ -69,10 +74,6 @@ logo_placeholder.markdown(
 
 # Image set with st.image() 
 st.image("./CNB_2025.png", width=200)
-st.set_page_config(
-    page_title="Tractome CNB – Main Analysis",
-    page_icon="🧬"
-)
 
 # Title and description
 st.title("Tractome")
