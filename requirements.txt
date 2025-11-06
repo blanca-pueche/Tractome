@@ -1,0 +1,13 @@
+
+# requirements.txt for Tractome project
+# 
+biopython
+gseapy
+matplotlib
+numpy
+pandas
+plotly
+requests
+seaborn
+streamlit
+streamlit-autorefresh
