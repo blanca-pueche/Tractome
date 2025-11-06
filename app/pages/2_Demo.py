@@ -7,7 +7,8 @@ import re
 import io, zipfile, datetime
 import re
 import streamlit.components.v1 as components
-from utils.pipeline import (estimate_table_height, normalize_disease_name, save_pathway_csvs,  save_drug_csvs)
+from utils.pipeline import (normalize_disease_name, save_pathway_csvs, save_drug_csvs)
+from utils.utils import estimate_table_height
 import time
 from pathlib import Path
 
