@@ -18,7 +18,6 @@ import webbrowser
 import sys
 
 # Where am I?
-# Detecta si estamos en demo
 current_page = os.path.basename(__file__)
 
 # Hide sidebar hack
