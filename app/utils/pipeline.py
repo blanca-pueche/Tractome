@@ -68,6 +68,12 @@ def fetch_gene_names(df):
     """
     Fetches gene names from ensembl and groups them according to log_2 fold change.
     """
+    
+    required_columns = ["Gene", "log_2 fold change"]
+    for col in required_columns:
+        if col not in df_raw.columns:
+            st.error(f"Missing required column: '{col}'")
+            st.stop()
 
     df["Gene Name"] = df["Gene"].apply(get_gene_name_from_ensembl)
     df_filtered = df[df["Gene Name"] != "Not Found"]
