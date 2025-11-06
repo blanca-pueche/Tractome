@@ -71,7 +71,7 @@ def fetch_gene_names(df):
     
     required_columns = ["Gene", "log_2 fold change"]
     for col in required_columns:
-        if col not in df_raw.columns:
+        if col not in df.columns:
             st.error(f"Missing required column: '{col}'")
             st.stop()
 
