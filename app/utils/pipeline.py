@@ -26,7 +26,7 @@ def get_disease_name(mesh_id):
         search_record = Entrez.read(search_handle)
         search_handle.close()
         if not search_record['IdList']:
-            return None
+            return None, None
         uid = search_record['IdList'][0]
         summary_handle = Entrez.esummary(db="mesh", id=uid)
         summary_record = Entrez.read(summary_handle)
@@ -34,7 +34,7 @@ def get_disease_name(mesh_id):
         disease_url = f"https://www.ncbi.nlm.nih.gov/mesh/{uid}"
         return summary_record[0]['DS_MeshTerms'][0], disease_url
     except:
-        return None
+        return None, None
     
 def generate_expression_atlas_link(disease_name):
     """
