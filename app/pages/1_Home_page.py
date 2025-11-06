@@ -84,7 +84,7 @@ st.markdown(
 # Button to go to demo page
 if st.button("Pre-computed example of MeSH ID: D003110"):
     # Redirect to the demo
-    st.switch_page("pages/demo.py")
+    st.switch_page("pages/2_Demo.py")
     
 # Style and layout (tooltip)
 st.markdown("""
