@@ -1,3 +1,6 @@
+# streamlit_page_title: Tractome CNB – Demo (Colonic Neoplasms)
+# streamlit_page_icon: ⚗️
+
 import streamlit as st
 import pandas as pd
 from Bio import Entrez
