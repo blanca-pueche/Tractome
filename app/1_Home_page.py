@@ -10,12 +10,17 @@ from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 import re
 import streamlit.components.v1 as components
-from pipeline import (get_disease_name,generate_expression_atlas_link,fetch_gene_names, find_possible_target_of_drugs, analyze_pathways, get_overlapping_genes,get_drug_targets_dgidb_graphql,drug_with_links, estimate_table_height, normalize_disease_name, add_links_to_final_table, save_pathway_csvs,  save_drug_csvs)
-from utils import find_free_port
+from utils.pipeline import (get_disease_name, generate_expression_atlas_link, fetch_gene_names, find_possible_target_of_drugs, analyze_pathways, get_overlapping_genes, get_drug_targets_dgidb_graphql, drug_with_links, normalize_disease_name, add_links_to_final_table, save_pathway_csvs, save_drug_csvs)
+from utils.utils import estimate_table_height
 from pathlib import Path
 import subprocess
 import webbrowser
 import sys
+
+st.set_page_config(
+    page_title="Home - Tractome CNB",
+    page_icon="🧬"
+)
 
 st.markdown("""
     <style>
@@ -68,46 +73,23 @@ logo_placeholder.markdown(
 )
 
 # Image set with st.image() 
-st.image("https://upload.wikimedia.org/wikipedia/commons/7/7f/Logo_CNB.jpg", width=200)
+st.image("../assets/CNB_2025.png", width=200)
 
-
+# Title and description
 st.title("Tractome")
 st.markdown(
     "<p style='font-size:18px; font-weight:bold;'>Integrative analysis of upregulated disease genes, pathways, and drug interactions.</p>",
     unsafe_allow_html=True
 )
 
-
-demo_path = Path("demo.py")
-
-# Session state guards
-if "demo_started" not in st.session_state:
-    st.session_state.demo_started = False
-if "demo_opened" not in st.session_state:
-    st.session_state.demo_opened = False
-if "demo_port" not in st.session_state:
-    st.session_state.demo_port = None
-
+# Button to go to demo page
 if st.button("Pre-computed example of MeSH ID: D003110"):
-    port = find_free_port()
-
-    #start demo server
-    subprocess.Popen([
-        sys.executable, "-m", "streamlit", "run", str(demo_path),
-        "--server.port", str(port),
-        "--server.headless", "true",
-    ])
-
-    #display when it runs
-    url = f"http://localhost:{port}"
-    st.info(f"Demo app is running at: {url}")
-
-    webbrowser.open_new_tab(url)
-    
+    # Redirect to the demo
+    st.switch_page("pages/2_Demo.py")
     
 # Style and layout (tooltip)
 st.markdown("""
-<style>
+<style>        
 .email-label-wrapper {
   display: flex;
   align-items: center;
@@ -356,7 +338,7 @@ if mesh_id:
             width=2000
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         
         # Step 5: Search biotype and tractability for the genes in Open Targets
@@ -533,7 +515,7 @@ if mesh_id:
                     width= 1000
                 )
                 fig.update_xaxes(showticklabels=False)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
                 
                 # Biotype graph
                 fig = px.bar(
@@ -548,7 +530,7 @@ if mesh_id:
                     width= 1000
                 )
 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
 
             else:
                 st.warning("No results found in Open Targets.")
@@ -1010,7 +992,7 @@ if mesh_id:
 
                         with col2:
                             st.markdown("**Gene–Drug Interactions by Interaction Type**")
-                            st.dataframe(interaction_wide, use_container_width=True)              
+                            st.dataframe(interaction_wide, width="stretch")              
                         
                     else:
                         st.info("No 'Interaction Type' column found.")
@@ -1346,3 +1328,26 @@ if mesh_id:
                             file_name="all_tables.zip",
                             mime="application/zip"
                         )
+
+st.markdown("""
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: rgba(240,240,240,0.7);
+        text-align: center;
+        color: gray;
+        font-size: 0.9em;
+        padding: 8px 0;
+    }
+    </style>
+
+    <div class="footer">
+        © 2025 CNB – Tractome 🧬
+    </div>
+""", unsafe_allow_html=True)
