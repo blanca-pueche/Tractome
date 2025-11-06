@@ -11,6 +11,20 @@ from pipeline import (estimate_table_height, normalize_disease_name, save_pathwa
 import time
 from pathlib import Path
 
+# Hide sidebar hack
+st.markdown("""
+    <style>
+        /* Oculta la barra lateral del menú multipágina */
+        section[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        /* Expande el contenido a todo el ancho */
+        .block-container {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
     <style>
