@@ -1,6 +1,3 @@
-# streamlit_page_title: Tractome CNB – Main Page
-# streamlit_page_icon: 🧬
-
 import streamlit as st
 import pandas as pd
 from Bio import Entrez
@@ -72,8 +69,12 @@ logo_placeholder.markdown(
 
 # Image set with st.image() 
 st.image("./CNB_2025.png", width=200)
+st.set_page_config(
+    page_title="Tractome CNB – Main Analysis",
+    page_icon="🧬"
+)
 
-
+# Title and description
 st.title("Tractome")
 st.markdown(
     "<p style='font-size:18px; font-weight:bold;'>Integrative analysis of upregulated disease genes, pathways, and drug interactions.</p>",

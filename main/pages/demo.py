@@ -1,6 +1,3 @@
-# streamlit_page_title: Tractome CNB – Demo (Colonic Neoplasms)
-# streamlit_page_icon: ⚗️
-
 import streamlit as st
 import pandas as pd
 from Bio import Entrez
@@ -67,6 +64,11 @@ logo_placeholder.markdown(
 # Image set with st.image() 
 st.image("./CNB_2025.png", width=200)
 
+# Set page title and icon
+st.set_page_config(
+    page_title="Tractome CNB – Demo (Colonic Neoplasms)",
+    page_icon="⚗️"
+)
 
 st.title("Tractome")
 st.markdown(
