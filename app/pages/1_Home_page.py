@@ -72,7 +72,7 @@ logo_placeholder.markdown(
 )
 
 # Image set with st.image() 
-st.image("assets/CNB_2025.png", width=200)
+st.image("../assets/CNB_2025.png", width=200)
 
 # Title and description
 st.title("Tractome")
