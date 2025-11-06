@@ -170,7 +170,7 @@ if mesh_id:
 
             if uploaded_file is None:
                 #demo Expression Atlas file
-                uploaded_file = "./demoData/colorectal.tsv"
+                uploaded_file = "../assets/demoData/colorectal.tsv"
        
     if uploaded_file:
         df_raw = pd.read_csv(uploaded_file, sep="\t")
@@ -183,7 +183,7 @@ if mesh_id:
         st.markdown("## Gene Table with Links to Ensembl")
 
         # Conversion of dataframe to HTML
-        df_genes = pd.read_csv("./demoData/genes.csv", sep=",")
+        df_genes = pd.read_csv("../assets/demoData/genes.csv", sep=",")
         html_table = df_genes.to_html(
             escape=False, index=False, table_id="geneTable"
         )
@@ -323,7 +323,7 @@ if mesh_id:
         with st.spinner("Checking Open Targets..."):
             time.sleep(1)
         #default file
-        openTargets_df = pd.read_csv("./demoData/openTargets_genes.csv", sep=",")
+        openTargets_df = pd.read_csv("../assets/demoData/openTargets_genes.csv", sep=",")
         if True:
             if True:
                 st.markdown("# Genes with Tractability (Open Targets)")
@@ -508,7 +508,7 @@ if mesh_id:
                 try:
                     number_pathways = int(number_pathways)
                     #default file
-                    top_pathways = pd.read_csv("./demoData/topPathways.csv", sep=",")
+                    top_pathways = pd.read_csv("../assets/demoData/topPathways.csv", sep=",")
 
                     if top_pathways is not None:
                         html_pathway_table = top_pathways[["Reactome Link", "Adjusted P-value", "-log10(Adj P)", "Overlap", "Input %", "Sum log2fc"]].to_html(escape=False, index=False, table_id="topPathwayTable")
@@ -628,7 +628,7 @@ if mesh_id:
 
                         # Get overlapping genes for that pathway
                         #default file path for csv files of top 10 pathways
-                        folder_path = Path("./demoData/all_pathway_genes_csvs") 
+                        folder_path = Path("../assets/demoData/all_pathway_genes_csvs") 
 
                         # Display pathway name
                         st.subheader(f"{selected_pathway}")
@@ -761,7 +761,7 @@ if mesh_id:
                     selected_pathway_row = top_pathways[top_pathways["Term"] == selected_pathway].iloc[0]
 
                     #default path for csv files of top 10 pathways
-                    folder_path = Path("./demoData/all_drug_csvs") 
+                    folder_path = Path("../assets/demoData/all_drug_csvs") 
                     file_name = f"{selected_pathway.replace(' ', '_')}_drugs.csv"
                     matching_file = folder_path / file_name
                     drug_df = pd.read_csv(matching_file, sep=",")
@@ -953,7 +953,7 @@ if mesh_id:
                 
                 # Apply to your merged table
                 #default file
-                merged_with_links = pd.read_csv("./demoData/full_results_table.csv", sep=",")
+                merged_with_links = pd.read_csv("../assets/demoData/full_results_table.csv", sep=",")
                 merged_with_links = merged_with_links.fillna("NaN")
 
                 st.markdown("## 📦 Download Full Results Table")

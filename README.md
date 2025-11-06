@@ -15,7 +15,7 @@ Tractome is a web-based application designed for the integrative analysis of dis
 Tractome helps researchers quickly identify **drug-targetable genes** in complex disease datasets and understand the broader biological context, facilitating **hypothesis generation and drug discovery.**
 
 ## Getting started
-1. Access the web application via [The Tractome Project on BCU](https://tractome.biocomputingunit.es).
+1. Access the web application via [The Tractome Project at BCU](https://tractome.biocomputingunit.es).
 2. Input a **MeSH ID** and upload **differential gene expression data.**
 3. Explore analysis results through the web interface. 
 4. Download results as needed fro downstream analysis.
@@ -23,8 +23,8 @@ Tractome helps researchers quickly identify **drug-targetable genes** in complex
 ## Deploying your own Tractome instance
 You can also deploy your own tractome instance as such:
 1. Clone this repository
-2. Create a virtual environment. With venv, this would be: python3 -m venv /desired_path/to/your/venv
-3. Activate it and install the requirements. With venv, this would be: source /path/to/venv/bin/activate and then pip install -r requirements.txt
-4. Launch the server streamlit run DGS.py
+2. Create a virtual environment. With venv, this would be: `python3 -m venv /desired_path/to/your/venv`
+3. Activate it and install the requirements. With venv, this would be: `source /path/to/venv/bin/activate` and then `pip install -r requirements.txt`
+4. Launch the server with `python3 main.py` 
 
 Some configuration might be necessary for the Streamlit app to be available through Nginx/Apache2 proxies. Please refer to the Apache, NGINX and Streamlit documentation.
