@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 # Set root folder for the project & app path
-project_root = Path(__file__).resolve().parent
+project_root = Path(__file__).resolve().parent.parent
 app_path = project_root / "app" / "main.py"
 
 # Launch Streamlit
