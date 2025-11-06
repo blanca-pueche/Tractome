@@ -337,7 +337,7 @@ if mesh_id:
             width=2000
         )
 
-        st.plotly_chart(fig, width=stretch)
+        st.plotly_chart(fig, use_container_width=True)
 
         
         # Step 5: Search biotype and tractability for the genes in Open Targets
@@ -514,7 +514,7 @@ if mesh_id:
                     width= 1000
                 )
                 fig.update_xaxes(showticklabels=False)
-                st.plotly_chart(fig, width=stretch)
+                st.plotly_chart(fig, use_container_width=True)
                 
                 # Biotype graph
                 fig = px.bar(
@@ -529,7 +529,7 @@ if mesh_id:
                     width= 1000
                 )
 
-                st.plotly_chart(fig, width=stretch)
+                st.plotly_chart(fig, use_container_width=True)
 
             else:
                 st.warning("No results found in Open Targets.")
@@ -991,7 +991,7 @@ if mesh_id:
 
                         with col2:
                             st.markdown("**Gene–Drug Interactions by Interaction Type**")
-                            st.dataframe(interaction_wide, width=stretch)              
+                            st.dataframe(interaction_wide, use_container_width=True)              
                         
                     else:
                         st.info("No 'Interaction Type' column found.")
