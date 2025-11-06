@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Set page title and icon
 st.set_page_config(
-    page_title="Tractome CNB – Demo (Colonic Neoplasms)",
+    page_title="Demo - Tractome CNB",
     page_icon="⚗️"
 )
 

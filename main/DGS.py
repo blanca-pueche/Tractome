@@ -18,7 +18,7 @@ import webbrowser
 import sys
 
 st.set_page_config(
-    page_title="Tractome CNB – Main Analysis",
+    page_title="Home - Tractome CNB",
     page_icon="🧬"
 )
 
