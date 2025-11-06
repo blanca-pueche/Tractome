@@ -186,7 +186,11 @@ if mesh_id:
         st.write("Uploaded correctly")
         
         with st.spinner("Mapping Ensembl IDs to gene names..."):
-            df_selected = fetch_gene_names(df_raw)
+            try:
+                df_selected = fetch_gene_names(df_raw)
+            except ValueError as e:
+                st.error(f"Problem with uploaded file: {e}")
+                st.stop()
         
         # Step 4: Obtain Ensembl ID with links for the genes
         df_selected_with_links = df_selected.copy()
