@@ -10,7 +10,8 @@ from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 import re
 import streamlit.components.v1 as components
-from utils.pipeline import (get_disease_name,generate_expression_atlas_link,fetch_gene_names, find_possible_target_of_drugs, analyze_pathways, get_overlapping_genes,get_drug_targets_dgidb_graphql,drug_with_links, estimate_table_height, normalize_disease_name, add_links_to_final_table, save_pathway_csvs,  save_drug_csvs)
+from utils.pipeline import (get_disease_name, generate_expression_atlas_link, fetch_gene_names, find_possible_target_of_drugs, analyze_pathways, get_overlapping_genes, get_drug_targets_dgidb_graphql, drug_with_links, normalize_disease_name, add_links_to_final_table, save_pathway_csvs, save_drug_csvs)
+from utils.utils import estimate_table_height
 from pathlib import Path
 import subprocess
 import webbrowser
