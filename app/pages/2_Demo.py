@@ -7,10 +7,16 @@ import re
 import io, zipfile, datetime
 import re
 import streamlit.components.v1 as components
-from pipeline import (estimate_table_height, normalize_disease_name, save_pathway_csvs,  save_drug_csvs)
+from utils.pipeline import (normalize_disease_name, save_pathway_csvs, save_drug_csvs)
+from utils.utils import estimate_table_height
 import time
 from pathlib import Path
 
+# Set page title and icon
+st.set_page_config(
+    page_title="Demo - Tractome CNB",
+    page_icon="⚗️"
+)
 
 st.markdown("""
     <style>
@@ -63,8 +69,7 @@ logo_placeholder.markdown(
 )
 
 # Image set with st.image() 
-st.image("https://upload.wikimedia.org/wikipedia/commons/7/7f/Logo_CNB.jpg", width=200)
-
+st.image("../assets/CNB_2025.png", width=200)
 
 st.title("Tractome")
 st.markdown(
@@ -146,6 +151,7 @@ Entrez.email = email
 mesh_id = st.text_input("🔍 Enter MeSH ID (e.g., D003920 for Diabetes Mellitus):", value="D003110")
 
 spinner = st.spinner
+uploaded_file = None
 
 if mesh_id:
     with st.spinner("Fetching disease information..."):
@@ -165,11 +171,8 @@ if mesh_id:
 
             if uploaded_file is None:
                 #demo Expression Atlas file
-                uploaded_file = "../demoData/colorectal.tsv"
-
-            
-            
-            
+                uploaded_file = "../assets/demoData/colorectal.tsv"
+       
     if uploaded_file:
         df_raw = pd.read_csv(uploaded_file, sep="\t")
         st.write("Uploaded correctly")
@@ -181,7 +184,7 @@ if mesh_id:
         st.markdown("## Gene Table with Links to Ensembl")
 
         # Conversion of dataframe to HTML
-        df_genes = pd.read_csv("../demoData/genes.csv", sep=",")
+        df_genes = pd.read_csv("../assets/demoData/genes.csv", sep=",")
         html_table = df_genes.to_html(
             escape=False, index=False, table_id="geneTable"
         )
@@ -314,14 +317,14 @@ if mesh_id:
             width=2000
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         
         # Step 5: Search biotype and tractability for the genes in Open Targets
         with st.spinner("Checking Open Targets..."):
             time.sleep(1)
         #default file
-        openTargets_df = pd.read_csv("../demoData/openTargets_genes.csv", sep=",")
+        openTargets_df = pd.read_csv("../assets/demoData/openTargets_genes.csv", sep=",")
         if True:
             if True:
                 st.markdown("# Genes with Tractability (Open Targets)")
@@ -465,7 +468,7 @@ if mesh_id:
                     width= 1000
                 )
                 fig.update_xaxes(showticklabels=False)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
                 
                 # Biotype graph
                 fig = px.bar(
@@ -480,7 +483,7 @@ if mesh_id:
                     width= 1000
                 )
 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
 
         
         with st.spinner("Performing pathway analysis..."):
@@ -506,7 +509,7 @@ if mesh_id:
                 try:
                     number_pathways = int(number_pathways)
                     #default file
-                    top_pathways = pd.read_csv("../demoData/topPathways.csv", sep=",")
+                    top_pathways = pd.read_csv("../assets/demoData/topPathways.csv", sep=",")
 
                     if top_pathways is not None:
                         html_pathway_table = top_pathways[["Reactome Link", "Adjusted P-value", "-log10(Adj P)", "Overlap", "Input %", "Sum log2fc"]].to_html(escape=False, index=False, table_id="topPathwayTable")
@@ -626,7 +629,7 @@ if mesh_id:
 
                         # Get overlapping genes for that pathway
                         #default file path for csv files of top 10 pathways
-                        folder_path = Path("../demoData/all_pathway_genes_csvs") 
+                        folder_path = Path("../assets/demoData/all_pathway_genes_csvs") 
 
                         # Display pathway name
                         st.subheader(f"{selected_pathway}")
@@ -759,7 +762,7 @@ if mesh_id:
                     selected_pathway_row = top_pathways[top_pathways["Term"] == selected_pathway].iloc[0]
 
                     #default path for csv files of top 10 pathways
-                    folder_path = Path("../demoData/all_drug_csvs") 
+                    folder_path = Path("../assets/demoData/all_drug_csvs") 
                     file_name = f"{selected_pathway.replace(' ', '_')}_drugs.csv"
                     matching_file = folder_path / file_name
                     drug_df = pd.read_csv(matching_file, sep=",")
@@ -935,7 +938,7 @@ if mesh_id:
 
                         with col2:
                             st.markdown("**Gene–Drug Interactions by Interaction Type**")
-                            st.dataframe(interaction_wide, use_container_width=True)              
+                            st.dataframe(interaction_wide, width="stretch")              
                         
                     else:
                         st.info("No 'Interaction Type' column found.")
@@ -951,7 +954,7 @@ if mesh_id:
                 
                 # Apply to your merged table
                 #default file
-                merged_with_links = pd.read_csv("../demoData/full_results_table.csv", sep=",")
+                merged_with_links = pd.read_csv("../assets/demoData/full_results_table.csv", sep=",")
                 merged_with_links = merged_with_links.fillna("NaN")
 
                 st.markdown("## 📦 Download Full Results Table")
@@ -1170,3 +1173,26 @@ if mesh_id:
                             file_name="all_tables.zip",
                             mime="application/zip"
                         )
+
+st.markdown("""
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: rgba(240,240,240,0.7);
+        text-align: center;
+        color: gray;
+        font-size: 0.9em;
+        padding: 8px 0;
+    }
+    </style>
+
+    <div class="footer">
+        © 2025 CNB – Tractome 🧬
+    </div>
+""", unsafe_allow_html=True)
