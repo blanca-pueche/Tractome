@@ -13,7 +13,7 @@ def estimate_table_height(df):
     base_padding = 100  # Base padding
 
     height = len(df) * row_height + base_padding
-    height = max(height, 400) # At least 128px always
-    height = min (height, 768) # At most 1024px
+    height = max(height, 200) # At least 200px always
+    height = min (height, 768) # At most 768px
 
     return height
