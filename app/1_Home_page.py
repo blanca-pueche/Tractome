@@ -1327,3 +1327,26 @@ if mesh_id:
                             file_name="all_tables.zip",
                             mime="application/zip"
                         )
+
+st.markdown("""
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: rgba(240,240,240,0.7);
+        text-align: center;
+        color: gray;
+        font-size: 0.9em;
+        padding: 8px 0;
+    }
+    </style>
+
+    <div class="footer">
+        © 2025 CNB – Tractome 🧬
+    </div>
+""", unsafe_allow_html=True)
