@@ -22,6 +22,13 @@ st.set_page_config(
     page_icon="🧬"
 )
 
+st.markdown(
+    """
+    <script src="https://cdn.counter.dev/script.js" data-id="7573e275-619f-450a-b1c1-a2a3b586a601" data-utcoffset="1"></script>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("""
     <style>
     .fixed-logo {
