@@ -635,6 +635,7 @@ if mesh_id:
                         st.subheader(f"{selected_pathway}")
 
                         file_name = f"{selected_pathway.replace(' ', '_')}.csv"
+                        file_name = file_name.replace('/','_')
                         matching_file = folder_path / file_name
                         pathway_genes_newNames = pd.read_csv(matching_file, sep=",")
                         
