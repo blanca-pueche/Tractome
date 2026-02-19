@@ -10,7 +10,7 @@ from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 import re
 import streamlit.components.v1 as components
-from utils.pipeline import (get_disease_name, generate_expression_atlas_link, fetch_gene_names, find_possible_target_of_drugs, analyze_pathways, get_overlapping_genes, get_drug_targets_dgidb_graphql, drug_with_links, normalize_disease_name, add_links_to_final_table, save_pathway_csvs, save_drug_csvs)
+from utils.pipeline import *
 from utils.utils import estimate_table_height
 from pathlib import Path
 import subprocess
@@ -150,38 +150,45 @@ st.markdown("""
   opacity: 1;
 }
 </style>
-
-<div class="email-label-wrapper">
-  <span>Enter user e-mail:</span>
-  <div class="tooltip">ℹ️
-    <span class="tooltiptext">
-      Email adress is necessary for Entrez searches.
-    </span>
-  </div>
-</div>
 """, unsafe_allow_html=True)
 
 #Step 1: Text input for email
+st.write('Enter user e-mail ℹ️: ')
 email = st.text_input("User e-mail:", key="user_email", label_visibility="collapsed")
 Entrez.email = email
 
-#Step 2: Name from MeshID
-mesh_id = st.text_input("🔍 Enter MeSH ID (e.g., D003920 for Diabetes Mellitus):")
+options = ['Disease name', 'Disease MeSH ID']
+searchBy = st.pills('Input: ', options, selection_mode="single", default=None)
+
+#Step 2: Retrieve MeSH ID
+input = None
+if searchBy == options[0]:
+    input = st.text_input("🔍 Enter disease name (e.g., Diabetes Mellitus):")
+elif searchBy == options[1]:
+    input = st.text_input("🔍 Enter MeSH ID (e.g., D003920 for Diabetes Mellitus):")
 
 spinner = st.spinner
 
-if mesh_id:
-    with st.spinner("Fetching disease information..."):
-        disease, disease_url = get_disease_name(mesh_id)
+if searchBy and input:
+    normalized_disease = None
+    if searchBy == options[1]:
+        mesh_id = input
+        with st.spinner("Fetching disease information..."):
+            disease, disease_url = get_disease_name(mesh_id)
+
+        if not disease:
+            st.error("No valid disease found. "
+                     "Please enter a recognized MeSH ID.")
+            st.stop()
         
-    if not disease:
-        st.error("No valid MeSH term found. Please enter a correct MeSH ID or disease name.")
-        st.stop()
-        
-    if disease:
-        normalized_disease = normalize_disease_name(disease)
-        st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
-        
+        if disease:
+            normalized_disease = normalize_disease_name(disease)
+            st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
+    elif searchBy == options[0]:
+        normalized_input = normalize_disease_name(input)
+        # todo method to check if the disease is identified
+
+    if normalized_disease:
         # Step 3: File upload only after disease name is given
         url = generate_expression_atlas_link(disease_name=normalized_disease)
         uploaded_file = st.file_uploader(

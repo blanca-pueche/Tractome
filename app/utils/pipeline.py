@@ -12,6 +12,7 @@ import io, zipfile
 import re
 import urllib.parse
 
+from bs4 import BeautifulSoup
 
 GRAPHQL_URL = "https://dgidb.org/api/graphql"
 ENSEMBL_LOOKUP_URL = "https://rest.ensembl.org/lookup/id/"
@@ -35,7 +36,7 @@ def get_disease_name(mesh_id):
         return summary_record[0]['DS_MeshTerms'][0], disease_url
     except:
         return None, None
-    
+
 def generate_expression_atlas_link(disease_name):
     """
     Generates link to Expression Atlas for a given disease to extract gene information. 
@@ -69,7 +70,7 @@ def fetch_gene_names(df):
     Fetches gene names from ensembl and groups them according to log_2 fold change.
     """
     
-    required_columns = ["Gene", "log_2 fold change"]
+    required_columns = ["Gene", "log_2 fold change", "Adjusted p-value"]
     for col in required_columns:
         if col not in df.columns:
             st.error(f"Missing required column: '{col}'")
@@ -78,9 +79,10 @@ def fetch_gene_names(df):
     df["Gene Name"] = df["Gene"].apply(get_gene_name_from_ensembl)
     df_filtered = df[df["Gene Name"] != "Not Found"]
 
-    # Sum log2 fold changes for repeated genes
+    # Sum log2 fold changes  and adjusted p-val for repeated genes
     grouped = df_filtered.groupby(["Gene", "Gene Name"], as_index=False).agg({
-        "log_2 fold change": "sum"
+        "log_2 fold change": "sum",
+        "Adjusted p-value": "sum"
     })
 
     return grouped
