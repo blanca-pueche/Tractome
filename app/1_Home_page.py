@@ -181,7 +181,8 @@ if searchBy:
                 normalized_disease = normalize_disease_name(disease)
                 st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
     elif searchBy == options[0]:
-        mesh_df = load_mesh_xml("../assets/desc2026.xml")
+        path = download_mesh_database() #todo
+        mesh_df = load_mesh_xml(path)
 
         mesh_df = mesh_df[mesh_df["TreeNumber"].apply(lambda x: any(tn.startswith("C") for tn in x) if isinstance(x, list) else False)]
 
