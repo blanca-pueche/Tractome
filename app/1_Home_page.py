@@ -161,33 +161,46 @@ options = ['Disease name', 'Disease MeSH ID']
 searchBy = st.pills('Input: ', options, selection_mode="single", default=None)
 
 #Step 2: Retrieve MeSH ID
-input = None
-if searchBy == options[0]:
-    input = st.text_input("🔍 Enter disease name (e.g., Diabetes Mellitus):")
-elif searchBy == options[1]:
-    input = st.text_input("🔍 Enter MeSH ID (e.g., D003920 for Diabetes Mellitus):")
-
 spinner = st.spinner
 
-if searchBy and input:
+if searchBy:
     normalized_disease = None
     if searchBy == options[1]:
-        mesh_id = input
-        with st.spinner("Fetching disease information..."):
-            disease, disease_url = get_disease_name(mesh_id)
+        input = st.text_input("🔍 Enter MeSH ID (e.g., D003920 for Diabetes Mellitus):")
+        if input:
+            mesh_id = input
+            with st.spinner("Fetching disease information..."):
+                disease, disease_url = get_disease_name(mesh_id)
 
-        if not disease:
-            st.error("No valid disease found. "
-                     "Please enter a recognized MeSH ID.")
-            st.stop()
-        
-        if disease:
-            normalized_disease = normalize_disease_name(disease)
-            st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
+            if not disease:
+                st.error("No valid disease found. "
+                         "Please enter a recognized MeSH ID.")
+                st.stop()
+
+            if disease:
+                normalized_disease = normalize_disease_name(disease)
+                st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
     elif searchBy == options[0]:
-        normalized_input = normalize_disease_name(input)
-        # todo method to check if the disease is identified
+        mesh_df = load_mesh_xml("../assets/desc2026.xml")
 
+        mesh_df = mesh_df[mesh_df["TreeNumber"].apply(lambda x: any(tn.startswith("C") for tn in x) if isinstance(x, list) else False)]
+
+        input_text = st.text_input("🔍 Enter disease name (type at least 3 letters):")
+
+        normalized_disease = None
+        filtered_names = []
+        if input_text and len(input_text) >= 3:
+            filtered_names = mesh_df[mesh_df["Name"].str.contains(input_text, case=False, na=False)]["Name"].tolist()
+
+        if filtered_names:
+            selected_disease = st.selectbox("Matching diseases:", filtered_names)
+            if selected_disease:
+                mesh_id = mesh_df.loc[mesh_df["Name"] == selected_disease, "MeSH_ID"].values[0]
+                disease_url = f"https://www.ncbi.nlm.nih.gov/mesh/{mesh_id}"
+                normalized_disease = selected_disease
+                st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
+
+    uploaded_file = None
     if normalized_disease:
         # Step 3: File upload only after disease name is given
         url = generate_expression_atlas_link(disease_name=normalized_disease)

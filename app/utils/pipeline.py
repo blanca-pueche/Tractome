@@ -1,3 +1,5 @@
+import xml.etree.ElementTree as ET
+import numpy as np
 import streamlit as st
 import pandas as pd
 import requests
@@ -18,6 +20,25 @@ GRAPHQL_URL = "https://dgidb.org/api/graphql"
 ENSEMBL_LOOKUP_URL = "https://rest.ensembl.org/lookup/id/"
 
 # Methods
+def load_mesh_xml(xml_file):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    records = []
+    for descriptor in root.findall(".//DescriptorRecord"):
+        mesh_id = descriptor.findtext("DescriptorUI")
+        name = descriptor.findtext("DescriptorName/String")
+        # Some descriptors have multiple TreeNumbers
+        tree_numbers = [tn.text for tn in descriptor.findall(".//TreeNumberList/TreeNumber")]
+        if not tree_numbers:
+            tree_numbers = np.nan  # For later filtering
+        records.append({
+            "MeSH_ID": mesh_id,
+            "Name": name,
+            "TreeNumber": tree_numbers
+        })
+    return pd.DataFrame(records)
+
 def get_disease_name(mesh_id):
     """
     Returns the corresponding name of a disease given a MESH id provided by the user. 
