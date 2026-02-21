@@ -1,21 +1,9 @@
-import streamlit as st
-import pandas as pd
-from Bio import Entrez
-import numpy as np
 import plotly.express as px
-import os
-import re
-import io, zipfile, datetime
+import datetime
 from collections import defaultdict
-from streamlit_autorefresh import st_autorefresh
-import re
 import streamlit.components.v1 as components
 from utils.pipeline import *
 from utils.utils import estimate_table_height
-from pathlib import Path
-import subprocess
-import webbrowser
-import sys
 
 st.set_page_config(
     page_title="Home - Tractome CNB",
@@ -81,7 +69,7 @@ logo_placeholder.markdown(
     unsafe_allow_html=True
 )
 
-# Image set with st.image() 
+# Image set with st.image()
 st.image("../assets/CNB_2025.png", width=200)
 
 # Title and description
@@ -95,7 +83,7 @@ st.markdown(
 if st.button("Pre-computed example of MeSH ID: D003110"):
     # Redirect to the demo
     st.switch_page("pages/2_Demo.py")
-    
+
 # Style and layout (tooltip)
 st.markdown("""
 <style>        
@@ -181,7 +169,13 @@ if searchBy:
                 normalized_disease = normalize_disease_name(disease)
                 st.success(f"🎯 Disease **[{normalized_disease}]({disease_url})** identified")
     elif searchBy == options[0]:
-        path = download_mesh_database() #todo
+        with st.spinner("Downloading MeSH data..."):
+            try:
+                path = download_mesh_xml() #todo
+            except Exception as e:
+                st.error(f"Problem downloading MeSH data: {e}")
+                st.stop()
+
         mesh_df = load_mesh_xml(path)
 
         mesh_df = mesh_df[mesh_df["TreeNumber"].apply(lambda x: any(tn.startswith("C") for tn in x) if isinstance(x, list) else False)]
@@ -210,18 +204,18 @@ if searchBy:
             type=["tsv"]
         )
 
-            
+
     if uploaded_file:
         df_raw = pd.read_csv(uploaded_file, sep="\t")
         st.write("Uploaded correctly")
-        
+
         with st.spinner("Mapping Ensembl IDs to gene names..."):
             try:
                 df_selected = fetch_gene_names(df_raw)
             except ValueError as e:
                 st.error(f"Problem with uploaded file: {e}")
                 st.stop()
-        
+
         # Step 4: Obtain Ensembl ID with links for the genes
         df_selected_with_links = df_selected.copy()
         df_selected_with_links["Gene"] = df_selected_with_links["Gene"].apply(
@@ -233,7 +227,7 @@ if searchBy:
             "Gene":"Ensembl ID",
             "Gene Name":"Gene"
         })
-        
+
 
         # Title
         st.markdown("## Gene Table with Links to Ensembl")
@@ -344,18 +338,18 @@ if searchBy:
         """
 
         height = estimate_table_height(df_selected)
-        
-        
+
+
         # Show table
         components.html(html_code, height=height, scrolling=True)
-        
+
         # Download button
         st.download_button(
             "📥 Download Genes CSV",
             df_selected_with_links.to_csv(index=False),
             "genes.csv",
             "text/csv")
-        
+
         df_selected["Gene Name_raw"] = df_selected["Gene Name"]
 
         gname_fc = df_selected.groupby("Gene Name_raw", as_index=False)["log_2 fold change"].sum()
@@ -376,7 +370,7 @@ if searchBy:
 
         st.plotly_chart(fig, width="stretch")
 
-        
+
         # Step 5: Search biotype and tractability for the genes in Open Targets
         with st.spinner("Checking Open Targets..."):
             openTargets_results = df_selected["Gene"].apply(find_possible_target_of_drugs)
@@ -400,7 +394,7 @@ if searchBy:
                 openTargets_df["Gene Symbol"] = openTargets_df["Gene Symbol"].apply(
                     lambda x: f'<span title="{x}">{x[:10]}...</span>' if len(x) > 10 else x
                 )
-                
+
                 openTargets_df["Ensembl ID"] = openTargets_df["Ensembl ID"].apply(
                     lambda gene_id: f'<a href="https://www.ensembl.org/Multi/Search/Results?q={gene_id}" target="_blank">{gene_id}</a>'
                 )
@@ -417,7 +411,7 @@ if searchBy:
                     [Open Targets Tractability Overview](https://platform-docs.opentargets.org/target/tractability).
                     """
                 )
-                
+
                 html_ot_table = openTargets_df_newNames.to_html(escape=False, index=False, table_id="openTargetsTable")
 
                 html_ot_scroll = f"""
@@ -516,10 +510,10 @@ if searchBy:
                         {html_ot_table}
                     </div>
                 """
-                
+
                 height = estimate_table_height(openTargets_df)
                 components.html(html_ot_scroll, height=height+200, scrolling=True)
-                
+
                 st.download_button(
                     "📥 Download results from Open Targets",
                     openTargets_df.to_csv(index=False),
@@ -552,7 +546,7 @@ if searchBy:
                 )
                 fig.update_xaxes(showticklabels=False)
                 st.plotly_chart(fig, width="stretch")
-                
+
                 # Biotype graph
                 fig = px.bar(
                     bio_counts,
@@ -571,9 +565,9 @@ if searchBy:
             else:
                 st.warning("No results found in Open Targets.")
 
-        
+
         with st.spinner("Performing pathway analysis..."):
-            
+
             # Step 6: Search pathways for the genes
             st.markdown("# Top Enriched Reactome Pathways")
             # Add a helpful link to the overview page
@@ -601,7 +595,7 @@ if searchBy:
 
                     if top_pathways is not None:
                         html_pathway_table = top_pathways[["Reactome Link", "Adjusted P-value", "-log10(Adj P)", "Overlap", "Input %", "Sum log2fc"]].to_html(escape=False, index=False, table_id="topPathwayTable")
-                        
+
                         html_code_top_pathways = f"""
                         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -698,13 +692,13 @@ if searchBy:
                         """
                         height = estimate_table_height(top_pathways)
                         components.html(html_code_top_pathways, height=height, scrolling=True)
-                        
+
                         st.download_button(
                             "📥 Download Top N pathways CSV",
                             top_pathways.to_csv(index=False),
                             "topPathways.csv",
                             "text/csv")
-                                    
+
                         st.markdown("# Important genes in pathway: ")
                         selected_pathway = st.selectbox(
                             "🔍 Select a pathway to see the top genes",
@@ -725,9 +719,9 @@ if searchBy:
                         pathway_genes["Gene"] = pathway_genes["Gene"].apply(
                             lambda gene_id: f'<a href="https://www.ensembl.org/Multi/Search/Results?q={gene_id}" target="_blank">{gene_id}</a>'
                         )
-                        
+
                         pathway_genes = pathway_genes.drop(columns=["Gene Name_raw", "abs_fc"])
-                        
+
                         pathway_genes_newNames = pathway_genes.rename(columns={
                             "Gene":"Ensembl ID",
                             "Gene Name":"Gene"
@@ -845,10 +839,10 @@ if searchBy:
 
                 except ValueError:
                     st.error("Please enter a valid integer.")
-                
+
                 st.markdown("# Drug-Gene Interactions")
                 with st.spinner("Searching drug-gene interactions..."):
-                
+
                     selected_pathway = st.selectbox(
                         "🔍 Select a pathway to see drugs",
                     top_pathways["Term"].tolist(),
@@ -860,11 +854,11 @@ if searchBy:
                     drug_df = get_drug_targets_dgidb_graphql(pathway_genes["Gene Name"].tolist())
 
                 if not drug_df.empty:
-                    
+
                     drug_df_with_links = drug_with_links(drug_df)
-        
+
                     drug_df_with_links = drug_df_with_links.replace(r'^\s*$', np.nan, regex=True)
-                    
+
                     # HTML table
                     html_drug_table = drug_df_with_links.to_html(escape=False, index=False, table_id="drugTable")
 
@@ -964,10 +958,10 @@ if searchBy:
                     """
                     height = estimate_table_height(drug_df)
                     components.html(html_code_drug, height=height, scrolling=True)
-                    
-        
+
+
                     st.download_button("📥 Download Drug Interactions CSV", drug_df.to_csv(index=False), "drug_interactions.csv", "text/csv")
-                    
+
                     # Gene selection and plot
                     unique_genes = drug_df_with_links['Gene'].apply(lambda x: re.search(r'>(.*?)<', x).group(1)).unique()
                     selected_gene = st.selectbox("Select a gene to view its drug interaction scores", unique_genes)
@@ -988,7 +982,7 @@ if searchBy:
                     fig.update_layout(xaxis_tickangle=-45)
 
                     st.plotly_chart(fig)
-                    
+
                     if 'Interaction Type' in drug_df.columns:
                         st.markdown("# Distribution of Interaction Types")
 
@@ -1011,12 +1005,12 @@ if searchBy:
                             .apply(lambda df: [f"{g} → {d}" for g, d in zip(df['Gene'], df['Drug'])], include_groups=False)
                         )
 
-                        
+
 
                         # Convert to DataFrame with columns according to interaction type
                         max_len = interaction_grouped.map(len).max()
                         interaction_wide = pd.DataFrame({
-                            interaction_type: values + [""] * (max_len - len(values))  
+                            interaction_type: values + [""] * (max_len - len(values))
                             for interaction_type, values in interaction_grouped.items()
                         })
 
@@ -1028,14 +1022,14 @@ if searchBy:
 
                         with col2:
                             st.markdown("**Gene–Drug Interactions by Interaction Type**")
-                            st.dataframe(interaction_wide, width="stretch")              
-                        
+                            st.dataframe(interaction_wide, width="stretch")
+
                     else:
                         st.info("No 'Interaction Type' column found.")
 
                 else:
                     st.warning("No drug-gene interactions found.")
-                    
+
             else:
                 st.warning("No enriched pathways found.")
         # -- Merge all data into a full report table --
@@ -1098,7 +1092,7 @@ if searchBy:
                             merged = merged.drop(columns=[col[:-2] + "_y"])
                             merged = merged.rename(columns={col: col[:-2]})
 
-                            
+
                 if not top_pathways.empty:
                     pathway_genes_unique = pathway_genes[["Gene Name"]].drop_duplicates()
                     pathway_genes_unique["Pathway Match"] = True
@@ -1109,7 +1103,7 @@ if searchBy:
                             on="Gene Name"
                         )
 
-                            
+
                 #Delete duplicated columns
                 merged = merged.drop(columns=["Gene_y", "Gene Symbol", "Tractability_raw", "Gene Name_raw_x", "Gene Name_raw_y", "abs_fc_y", "log_2 fold change_y"], errors="ignore")
                 merged = merged.rename(columns={"Gene_x": "Gene", "abs_fc_x" : "abs_fc"})
@@ -1129,16 +1123,16 @@ if searchBy:
                 merged["Gene Name"] = merged["Gene Name"].astype(str).str.strip().str.upper()
                 merged["Pathways"] = merged["Gene Name"].apply(lambda g: "; ".join(gene_to_pathways.get(g, [])))
                 merged = merged.drop(columns=["Gene Name_raw", "abs_fc", "Ensembl ID"])
-                
+
                 merged["Gene"] = merged["Gene"].apply(
                         lambda gene_id: f'<a href="https://www.ensembl.org/Multi/Search/Results?q={gene_id}" target="_blank">{gene_id}</a>'
                     )
-                
+
                 merged_newNames = merged.rename(columns={
                     "Gene":"Ensembl ID",
                     "Gene Name":"Gene"
                 })
-                
+
                 # Apply to your merged table
                 merged_with_links = add_links_to_final_table(merged_newNames)
                 merged_with_links = merged_with_links.replace(r'^\s*$', np.nan, regex=True)
@@ -1146,7 +1140,7 @@ if searchBy:
 
                 # Show and download button
                 st.markdown("## 📦 Download Full Results Table")
-                
+
                 html_final_table = merged_with_links.to_html(escape=False, index=False, table_id="finalTable")
 
                 html_code_final = f"""

@@ -1,25 +1,45 @@
+import time
 import xml.etree.ElementTree as ET
 import numpy as np
 import streamlit as st
 import pandas as pd
-import requests
-import gseapy as gp
 from Bio import Entrez
 import urllib.parse
 import os
 import urllib.parse
 import gseapy as gp
-import re
 import io, zipfile
 import re
 import urllib.parse
-
-from bs4 import BeautifulSoup
 
 GRAPHQL_URL = "https://dgidb.org/api/graphql"
 ENSEMBL_LOOKUP_URL = "https://rest.ensembl.org/lookup/id/"
 
 # Methods
+import requests
+from pathlib import Path
+
+
+def download_mesh_xml(save_dir="data/mesh", year=2026):
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
+    url = f"https://nlmpubs.nlm.nih.gov/projects/mesh/MESH_FILES/xmlmesh/desc{year}.xml"
+    file_path = Path(save_dir) / f"desc{year}.xml"
+
+    if not file_path.exists():
+        print(f"Downloading {file_path.name}...")
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            with open(file_path, "wb") as f:
+                for chunk in r.iter_content(1024):
+                    f.write(chunk)
+            print(f"Downloaded file: {file_path}")
+        else:
+            raise ConnectionError(f"Could not download: {r.status_code}")
+    else:
+        print(f"File exists: {file_path}")
+
+    return str(file_path)
+
 def load_mesh_xml(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -73,17 +93,31 @@ def generate_expression_atlas_link(disease_name):
     )
     return base_url
 
-def get_gene_name_from_ensembl(ensembl_id):
+def get_gene_name_from_ensembl(ensembl_id, retries=3, delay=1):
     """
     Given an ensembl id it extracts the corresponding gene name.
     """
-    response = requests.get(f"{ENSEMBL_LOOKUP_URL}{ensembl_id}?content-type=application/json")
-    if response.status_code == 200:
-        data = response.json()
-        return data.get("display_name", "Not Found")
-    elif response.status_code == 429:
-        st.warning("Error 429: Resource Exceeded. Please try again later.")
-        st.stop()
+    url = f"{ENSEMBL_LOOKUP_URL}{ensembl_id}?content-type=application/json"
+
+    for attempt in range(retries):
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("display_name", "Not Found")
+            elif response.status_code == 429:
+                st.warning("Error 429: Resource Exceeded. Please try again later.")
+                st.stop()
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error on attempt {attempt + 1} for {ensembl_id}: {e}")
+            time.sleep(delay)
+        except requests.exceptions.Timeout:
+            print(f"Timeout on attempt {attempt + 1} for {ensembl_id}")
+            time.sleep(delay)
+        except Exception as e:
+            print(f"Unexpected error for {ensembl_id}: {e}")
+            break
+
     return "Not Found"
 
 def fetch_gene_names(df):
