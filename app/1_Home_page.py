@@ -171,7 +171,7 @@ if searchBy:
     elif searchBy == options[0]:
         with st.spinner("Downloading MeSH data..."):
             try:
-                path = download_mesh_xml() #todo
+                path = download_mesh_xml()
             except Exception as e:
                 st.error(f"Problem downloading MeSH data: {e}")
                 st.stop()
