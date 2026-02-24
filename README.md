@@ -15,7 +15,7 @@ DisGenix is a web-based application designed for the integrative analysis of dis
 DisGenix helps researchers quickly identify **drug-targetable genes** in complex disease datasets and understand the broader biological context, facilitating **hypothesis generation and drug discovery.**
 
 ## Getting started
-1. Access the web application via [The DisGenix Project at BCU](https://tractome.biocomputingunit.es).
+1. Access the web application via [The DisGenix Project at BCU](https://disgenix.biocomputingunit.es).
 2. Input a **MeSH ID** and upload **differential gene expression data.**
 3. Explore analysis results through the web interface. 
 4. Download results as needed fro downstream analysis.
