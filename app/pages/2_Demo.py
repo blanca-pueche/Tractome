@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Set page title and icon
 st.set_page_config(
-    page_title="Demo - Tractome CNB",
+    page_title="Demo - DisGenix CNB",
     page_icon="⚗️"
 )
 
@@ -71,7 +71,7 @@ logo_placeholder.markdown(
 # Image set with st.image() 
 st.image("../assets/CNB_2025.png", width=200)
 
-st.title("Tractome")
+st.title("DisGenix")
 st.markdown(
     "<p style='font-size:18px; font-weight:bold;'>Integrative analysis of upregulated disease genes, pathways, and drug interactions.</p>",
     unsafe_allow_html=True
@@ -1194,6 +1194,6 @@ st.markdown("""
     </style>
 
     <div class="footer">
-        © 2025 CNB – Tractome 🧬
+        © 2025 CNB – DisGenix 🧬
     </div>
 """, unsafe_allow_html=True)

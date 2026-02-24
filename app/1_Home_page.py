@@ -6,7 +6,7 @@ from utils.pipeline import *
 from utils.utils import estimate_table_height
 
 st.set_page_config(
-    page_title="Home - Tractome CNB",
+    page_title="Home - DisGenix CNB",
     page_icon="🧬"
 )
 
@@ -73,7 +73,7 @@ logo_placeholder.markdown(
 st.image("../assets/CNB_2025.png", width=200)
 
 # Title and description
-st.title("Tractome")
+st.title("DisGenix")
 st.markdown(
     "<p style='font-size:18px; font-weight:bold;'>Integrative analysis of upregulated disease genes, pathways, and drug interactions.</p>",
     unsafe_allow_html=True
@@ -1378,6 +1378,6 @@ st.markdown("""
     </style>
 
     <div class="footer">
-        © 2025 CNB – Tractome 🧬
+        © 2025 CNB – DisGenix 🧬
     </div>
 """, unsafe_allow_html=True)
