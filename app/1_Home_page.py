@@ -7,7 +7,7 @@ from utils.utils import estimate_table_height
 
 st.set_page_config(
     page_title="Home - DisGenix CNB",
-    page_icon="🧬"
+    page_icon="../assets/disgenixLogo.png",
 )
 
 components.html(
@@ -61,17 +61,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-logo_placeholder = st.empty()
-logo_placeholder.markdown(
-    """
-    <div class="fixed-logo"></div>
-    """,
-    unsafe_allow_html=True
-)
-
 # Image set with st.image()
-st.image("../assets/CNB_2025.png", width=200)
+col1, col2 = st.columns([1,5],gap=None, vertical_alignment='bottom')
+with col1:
+    st.image("../assets/disgenixLogo.png", width=200)
+with col2:
+    st.image("../assets/CNB_2025.png", width=200)
 
+st.logo(image="../assets/disgenixLogo2.png", size="large")
 # Title and description
 st.title("DisGenix")
 st.markdown(
