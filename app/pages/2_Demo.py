@@ -771,6 +771,7 @@ if mesh_id:
                     #default path for csv files of top 10 pathways
                     folder_path = Path("../assets/demoData/all_drug_csvs") 
                     file_name = f"{selected_pathway.replace(' ', '_')}_drugs.csv"
+                    file_name = file_name.replace('/', '_')
                     matching_file = folder_path / file_name
                     drug_df = pd.read_csv(matching_file, sep=",")
 
